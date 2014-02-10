@@ -1,0 +1,22 @@
+{
+    "name": "wouterj/serializer",
+    "description": "A simple serializer created as a demo",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wouter J",
+            "email": "wouter@wouterj.nl"
+        }
+    ],
+
+    "require": {
+        "jms/metadata": "1.5.*",
+        "symfony/property-access": "~2.3",
+        "symfony/yaml": "~2.3"
+    },
+    "require-dev": {
+        "behat/behat": "3.0.*@dev",
+        "phpspec/phpspec": "2.0.*@rc"
+    },
+    "minimum-stability": "dev"
+}
