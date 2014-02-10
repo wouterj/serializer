@@ -18,5 +18,9 @@
         "behat/behat": "3.0.*@dev",
         "phpspec/phpspec": "2.0.*@rc"
     },
-    "minimum-stability": "dev"
+
+    "minimum-stability": "dev",
+    "config": {
+        "psr-0": { "": "src" }
+    }
 }
