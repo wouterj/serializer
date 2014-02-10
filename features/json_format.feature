@@ -1,9 +1,9 @@
 Feature: Serializing Single Object
-    In order to save objects
+    In order to save objects for APIs
     As a developer
-    I want to serialize the object in different formats
+    I want to serialize the object in the JSON format
 
-    Scenario: Using the JSON format
+    Scenario: Simple properties
         Given a file called "User.php" with:
             """
             class User
