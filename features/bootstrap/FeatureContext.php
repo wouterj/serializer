@@ -98,7 +98,7 @@ class FeatureContext implements CustomSnippetAcceptingContext
         $accessor = PropertyAccess::createPropertyAccessor();
         foreach ($properties as $propertyString) {
             list($propAccess, $value) = explode(' = ', trim($propertyString, '"'));
-            $accessor->setValue($this->object, $propAccess, trim($value, "'\""));
+            $accessor->setValue($this->object, $propAccess, json_decode(strtr($value, "'", '"')));
         }
     }
 

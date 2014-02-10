@@ -28,3 +28,25 @@ Feature: Serializing Single Object
             """
             {"John Doe":{"age":32}}
             """
+
+    Scenario: Array properties
+        Given a file called "Post.php" with:
+            """
+            class Post
+            {
+                public $tags = array();
+            }
+            """
+        And a file called "config/post.yml" with:
+            """
+            Post:
+                properties:
+                    tags:
+                        type: array
+            """
+        And a "Post" object with "tags = ['feature', 'json', 'bar']"
+        When I serialize the object in the "json" format
+        Then the result should be:
+            """
+            [{"tags":["feature","json","bar"]}]
+            """
