@@ -18,25 +18,36 @@ class YamlFile extends AbstractFileDriver
     /**
      * @param YamlParser $parser
      */
-    public function __construct(FileLocatorInterface $locator, $parser)
+    public function __construct(FileLocatorInterface $locator, $parser = null)
     {
         parent::__construct($locator);
 
+        $parser = $parser ?: new YamlParser();
         $this->setParser($parser);
     }
 
     protected function loadMetadataFromFile(\ReflectionClass $class, $file)
     {
-        $yaml = $this->getParser()->parse($file);
+        $yaml = $this->getParser()->parse(file_get_contents($file));
 
         foreach ($yaml as $className => $classMapping) {
             $classMetadata = new ClassMetadata($className);
 
             if (isset($classMapping['properties'])) {
                 foreach ($classMapping['properties'] as $propertyName => $propertyMapping) {
-                    $propertyMetadata = new PropertyMetadata($propertyName);
+                    $propertyMetadata = new PropertyMetadata($className, $propertyName);
 
                     if (isset($propertyMapping['type'])) {
+                        $acceptedTypes = array('number', 'string');
+                        if (!in_array($propertyMapping['type'], $acceptedTypes)) {
+                            throw new \LogicException(sprintf(
+                                'Type for property "%s" ("%s") must be one of: %s.',
+                                $propertyName,
+                                $propertyMapping['type'],
+                                implode('; ', $acceptedTypes)
+                            ));
+                        }
+
                         $propertyMetadata->type = $propertyMapping['type'];
                     }
 
@@ -51,7 +62,7 @@ class YamlFile extends AbstractFileDriver
                             ));
                         }
 
-                        $propertyMetadata->type = $propertyMapping['map'];
+                        $propertyMetadata->map = $propertyMapping['map'];
                     }
 
                     $classMetadata->addPropertyMetadata($propertyMetadata);

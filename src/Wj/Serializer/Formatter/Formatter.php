@@ -15,5 +15,5 @@ interface Formatter
      * @param object        $object   The object
      * @param ClassMetadata $metadata The meta data for the object
      */
-    public function format($object, $metadata);
+    public function format($object, ClassMetadata $metadata);
 }

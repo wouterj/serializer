@@ -3,6 +3,7 @@
 namespace Wj\Serializer;
 
 use Wj\Serializer\Mapping\Driver\FileLocator;
+use Wj\Serializer\Mapping\Driver\YamlFile as YamlFileDriver;
 use Wj\Serializer\Formatter\Formatter;
 use Wj\Serializer\Formatter\Manager as FormatterManager;
 use Metadata\MetadataFactory;
@@ -22,28 +23,35 @@ class SerializerBuilder
 
     public function __construct()
     {
-        $this->driver = new DriverChain();
         $this->locator = new FileLocator();
     }
 
     public function registerFormat($format, Formatter $formatter)
     {
         $this->formats[$format] = $formatter;
+
+        return $this;
     }
 
     public function setDriverChain(DriverChain $driver)
     {
         $this->driver = $driver;
+
+        return $this;
     }
 
     public function addDriver(DriverInterface $driver)
     {
         $this->driver->addDriver($driver);
+
+        return $this;
     }
 
     public function setFileLocator(FileLocatorInterface $locator)
     {
         $this->locator = $locator;
+
+        return $this;
     }
 
     public function getSerializer()
@@ -52,7 +60,7 @@ class SerializerBuilder
         $driver = $this->driver;
         if (null === $driver) {
             $driver = new DriverChain(array(
-                new YamlFile($this->locator),
+                new YamlFileDriver($this->locator),
             ));
         }
         $factory = new MetadataFactory($driver);

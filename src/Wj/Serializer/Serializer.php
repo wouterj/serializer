@@ -32,7 +32,7 @@ class Serializer
     {
         $metadata = $this->getMetadataFactory()->getMetadataForClass(get_class($object));
 
-        return $this->getFormatterManager()->getFormatterByFormat($format)->format($object, $metadata);
+        return $this->getFormatterManager()->getFormatterByFormat($format)->format($object, $metadata->getRootClassMetadata());
     }
 
     protected function getFormatterManager()

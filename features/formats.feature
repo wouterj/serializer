@@ -26,11 +26,5 @@ Feature: Serializing Single Object
         When I serialize the object in the "json" format
         Then the result should be:
             """
-            {
-                "users": {
-                    "John Doe": {
-                        "age": 32
-                    }
-                }
-            }
+            {"John Doe":{"age":32}}
             """

@@ -83,24 +83,22 @@ class FeatureContext implements CustomSnippetAcceptingContext
      */
     public function createFile($fileName, PyStringNode $fileContents)
     {
-        file_put_contents($this->testDir.DIRECTORY_SEPARATOR.$fileName, (string) $fileContents);
+        file_put_contents($this->testDir.DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $fileName), (string) $fileContents);
     }
 
     /**
-     * @Given /^a "([^"]*)" object with ("([^"]*)"(?: and )?)+$/
+     * @Given /^a "([^"]*)" object with (".*")/
      */
     public function initializeObject($classname, $propertiesString)
     {
-        // ugly autoload function
         eval(file_get_contents($this->testDir.DIRECTORY_SEPARATOR.$classname.'.php'));
-
         $this->object = new $classname;
 
         $properties = explode(' and ', $propertiesString);
         $accessor = PropertyAccess::createPropertyAccessor();
         foreach ($properties as $propertyString) {
             list($propAccess, $value) = explode(' = ', trim($propertyString, '"'));
-            $accessor->setValue($this->object, $propAccess, $value);
+            $accessor->setValue($this->object, $propAccess, trim($value, "'\""));
         }
     }
 
@@ -124,10 +122,11 @@ class FeatureContext implements CustomSnippetAcceptingContext
 
     protected function getSerializer()
     {
-        $builder = SerializerFactory::createSerializerBuilder();
+        $builder = SerializerFactory::createSerializerBuilder()
+            ->setFileLocator(new FileLocator($this->testDir.DIRECTORY_SEPARATOR.'config'));
 
         $formats = array(
-//            'json' => 'Wj\Serializer\Formatters\Json',
+            'json' => 'Wj\Serializer\Formatter\Json',
         );
         foreach ($formats as $formatName => $formatterClassname) {
             $builder->registerFormat('json', new $formatterClassname);
