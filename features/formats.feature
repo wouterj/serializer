@@ -15,12 +15,12 @@ Feature: Serializing Single Object
         And a file called "config/user.yml" with:
             """
             User:
-                root: users
-                name:
-                    type: string
-                    position: key
-                age:
-                    type: number
+                properties:
+                    name:
+                        type: string
+                        map: key
+                    age:
+                        type: number
             """
         And a "User" object with "name = 'John Doe'" and "age = 32"
         When I serialize the object in the "json" format

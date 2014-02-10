@@ -20,7 +20,7 @@
     },
 
     "minimum-stability": "dev",
-    "config": {
+    "autoload": {
         "psr-0": { "": "src" }
     }
 }

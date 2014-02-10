@@ -127,7 +127,7 @@ class FeatureContext implements CustomSnippetAcceptingContext
         $builder = SerializerFactory::createSerializerBuilder();
 
         $formats = array(
-            'json' => 'Wj\Serializer\Formatters\Json',
+//            'json' => 'Wj\Serializer\Formatters\Json',
         );
         foreach ($formats as $formatName => $formatterClassname) {
             $builder->registerFormat('json', new $formatterClassname);
