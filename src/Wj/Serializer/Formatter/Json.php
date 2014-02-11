@@ -2,19 +2,11 @@
 
 namespace Wj\Serializer\Formatter;
 
-use Wj\Serializer\Serializer;
 use Metadata\ClassMetadata;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
-class Json implements Formatter
+class Json extends AbstractFormatter
 {
-    private $serializer;
-
-    public function setSerializer(Serializer $serializer)
-    {
-        $this->serializer = $serializer;
-    }
-
     public function format($object, ClassMetadata $metadata)
     {
         $accessor = PropertyAccess::createPropertyAccessor();
@@ -40,9 +32,9 @@ class Json implements Formatter
             if ('[]' === substr($propertyMetadata->type, -2)) {
                 $arrayType = substr($propertyMetadata->type, 0, -2);
                 $that = $this;
-                $value = array_map(function ($v) use ($that) {
+                $value = array_map(function ($v) use ($that, $arrayType) {
                     return $that->parseValue($arrayType, $v);
-                });
+                }, $propertyValue);
             } else {
                 $value = $this->parseValue($propertyMetadata->type, $propertyValue);
             }
@@ -61,13 +53,9 @@ class Json implements Formatter
                 break;
 
             case 'object':
-                $value = json_decode($this->serializer->serialize('json', $value));
+                $value = json_decode($this->getSerializer()->serialize('json', $value));
 
                 return current($value);
-
-            default:
-                $value = $value;
-                break;
         }
 
         return $value;
