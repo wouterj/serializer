@@ -16,9 +16,10 @@ class YamlFile extends AbstractFileDriver
     private $parser;
 
     /**
-     * @param YamlParser $parser
+     * @param FileLocatorInterface $locator
+     * @param YamlParser           $parser
      */
-    public function __construct(FileLocatorInterface $locator, $parser = null)
+    public function __construct(FileLocatorInterface $locator, YamlParser $parser = null)
     {
         parent::__construct($locator);
 
@@ -37,33 +38,8 @@ class YamlFile extends AbstractFileDriver
                 foreach ($classMapping['properties'] as $propertyName => $propertyMapping) {
                     $propertyMetadata = new PropertyMetadata($className, $propertyName);
 
-                    if (isset($propertyMapping['type'])) {
-                        $acceptedTypes = array('number', 'string', 'array', 'object', 'number[]', 'string[]', 'array[]', 'object[]');
-                        if (!in_array($propertyMapping['type'], $acceptedTypes)) {
-                            throw new \LogicException(sprintf(
-                                'Type for property "%s" ("%s") must be one of: %s.',
-                                $propertyName,
-                                $propertyMapping['type'],
-                                implode('; ', $acceptedTypes)
-                            ));
-                        }
-
-                        $propertyMetadata->type = $propertyMapping['type'];
-                    }
-
-                    if (isset($propertyMapping['map'])) {
-                        $acceptedTypes = array('key', 'element', 'attribute', 'value');
-                        if (!in_array($propertyMapping['map'], $acceptedTypes)) {
-                            throw new \LogicException(sprintf(
-                                'Mapping type for property "%s" ("%s") must be one of: %s.',
-                                $propertyName,
-                                $propertyMapping['map'],
-                                implode('; ', $acceptedTypes)
-                            ));
-                        }
-
-                        $propertyMetadata->map = $propertyMapping['map'];
-                    }
+                    $this->parseType($propertyMetadata, $propertyMapping, $propertyName);
+                    $this->parseMapType($propertyMetadata, $propertyMapping, $propertyName);
 
                     $classMetadata->addPropertyMetadata($propertyMetadata);
                 }
@@ -86,5 +62,29 @@ class YamlFile extends AbstractFileDriver
     private function setParser(YamlParser $parser)
     {
         $this->parser = $parser;
+    }
+
+    /**
+     * @throws \LogicException
+     */
+    protected function parseType($propertyMetadata, $propertyMapping, $propertyName)
+    {
+        if (isset($propertyMapping['type'])) {
+            MappingValidator::validateType($propertyMapping, $propertyName);
+
+            $propertyMetadata->type = $propertyMapping['type'];
+        }
+    }
+
+    /**
+     * @throws \LogicException
+     */
+    protected function parseMapType($propertyMetadata, $propertyMapping, $propertyName)
+    {
+        if (isset($propertyMapping['map'])) {
+            MappingValidator::validateMapType($propertyMapping, $propertyName);
+
+            $propertyMetadata->map = $propertyMapping['map'];
+        }
     }
 }
