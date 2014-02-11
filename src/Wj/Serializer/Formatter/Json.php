@@ -9,13 +9,12 @@ class Json extends AbstractFormatter
 {
     public function format($object, ClassMetadata $metadata)
     {
-        $accessor = PropertyAccess::createPropertyAccessor();
         $json = array();
         $i = 0;
         $key = $i;
 
         foreach ($metadata->propertyMetadata as $propertyName => $propertyMetadata) {
-            $propertyValue = $accessor->getValue($object, $propertyName);
+            $propertyValue = $this->getAccessor()->getValue($object, $propertyName);
 
             if ('key' === $propertyMetadata->map) {
                 $key = $propertyValue;
