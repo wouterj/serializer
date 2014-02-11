@@ -38,7 +38,7 @@ class YamlFile extends AbstractFileDriver
                     $propertyMetadata = new PropertyMetadata($className, $propertyName);
 
                     if (isset($propertyMapping['type'])) {
-                        $acceptedTypes = array('number', 'string', 'array');
+                        $acceptedTypes = array('number', 'string', 'array', 'object', 'number[]', 'string[]', 'array[]', 'object[]');
                         if (!in_array($propertyMapping['type'], $acceptedTypes)) {
                             throw new \LogicException(sprintf(
                                 'Type for property "%s" ("%s") must be one of: %s.',
@@ -52,7 +52,7 @@ class YamlFile extends AbstractFileDriver
                     }
 
                     if (isset($propertyMapping['map'])) {
-                        $acceptedTypes = array('key', 'element', 'attribute');
+                        $acceptedTypes = array('key', 'element', 'attribute', 'value');
                         if (!in_array($propertyMapping['map'], $acceptedTypes)) {
                             throw new \LogicException(sprintf(
                                 'Mapping type for property "%s" ("%s") must be one of: %s.',

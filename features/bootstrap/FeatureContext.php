@@ -14,6 +14,7 @@ class FeatureContext implements CustomSnippetAcceptingContext
 {
     private $testDir;
     private $object;
+    private $aliases = array();
     private $serializeResult;
 
     /**
@@ -87,18 +88,28 @@ class FeatureContext implements CustomSnippetAcceptingContext
     }
 
     /**
-     * @Given /^a "([^"]*)" object with (".*")/
+     * @Given /^a "([^"]*)" object with (".*?")(?: as "([^"]+)")?$/
      */
-    public function initializeObject($classname, $propertiesString)
+    public function initializeObject($classname, $propertiesString, $alias = null)
     {
         eval(file_get_contents($this->testDir.DIRECTORY_SEPARATOR.$classname.'.php'));
-        $this->object = new $classname;
+        if (null !== $alias) {
+            $this->aliases[$alias] = $object = new $classname;
+        } else {
+            $this->object = $object = new $classname;
+        }
 
         $properties = explode(' and ', $propertiesString);
         $accessor = PropertyAccess::createPropertyAccessor();
         foreach ($properties as $propertyString) {
             list($propAccess, $value) = explode(' = ', trim($propertyString, '"'));
-            $accessor->setValue($this->object, $propAccess, json_decode(strtr($value, "'", '"')));
+
+            if ('%' === substr($value, 0, 1)) {
+                $value = isset($this->aliases[substr($value, 1, -1)]) ? $this->aliases[substr($value, 1, -1)] : null;
+            } else {
+                $value = json_decode(strtr($value, "'", '"'));
+            }
+            $accessor->setValue($object, $propAccess, $value);
         }
     }
 

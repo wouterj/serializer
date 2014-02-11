@@ -43,6 +43,7 @@ class Serializer
     private function setFormatterManager(FormatterManager $manager)
     {
         $this->formatterManager = $manager;
+        $manager->setSerializer($this);
     }
 
     protected function getMetadataFactory()

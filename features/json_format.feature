@@ -50,3 +50,86 @@ Feature: Serializing Single Object
             """
             [{"tags":["feature","json","bar"]}]
             """
+
+    Scenario: Typed arrays
+        Given a file called "Range.php" with:
+            """
+            class Range
+            {
+                public $numbers = array();
+            }
+            """
+        And a file called "config/range.yml" with:
+            """
+            Range:
+                properties:
+                    numbers:
+                        type: number[]
+            """
+        And a "Range" object with "numbers = ['12', 10, 8, 6, 4, 2]"
+        When I serialize the object in the "json" format
+        Then the result should be:
+            """
+            [{"numbers":[12,10,8,6,4,2]}]
+            """
+
+    Scenario: Mapped as value
+        Given a file called "Category.php" with:
+            """
+            class Category
+            {
+                public $name;
+            }
+            """
+        And a file called "config/category.yml" with:
+            """
+            Category:
+                properties:
+                    name:
+                        type: string
+                        map: value
+            """
+        And a "Category" object with "name = 'Foo'"
+        When I serialize the object in the "json" format
+        Then the result should be:
+            """
+            ["Foo"]
+            """
+
+    Scenario: Object
+        Given a file called "BlogPost.php" with:
+            """
+            class BlogPost
+            {
+                public $tag;
+            }
+            """
+        And a file called "config/blogpost.yml" with:
+            """
+            BlogPost:
+                properties:
+                    tag:
+                        type: object
+            """
+        And a file called "Tag.php" with:
+            """
+            class Tag
+            {
+                public $name;
+            }
+            """
+        And a file called "config/tag.yml" with:
+            """
+            Tag:
+                properties:
+                    name:
+                        type: string
+                        map: value
+            """
+        And a "Tag" object with "name = 'Foo'" as "tag"
+        And a "BlogPost" object with "tag = %tag%"
+        When I serialize the object in the "json" format
+        Then the result should be:
+            """
+            [{"tag":"Foo"}]
+            """
